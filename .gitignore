@@ -1,0 +1,25 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+.env
+
+# Test and tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated screenshots and reports
+screenshots/
+desktop_screenshot.png
+mobile_screenshot.png
+ui_bug.png
+
+# IDE and operating system files
+.vscode/
+.DS_Store
+Thumbs.db
+
