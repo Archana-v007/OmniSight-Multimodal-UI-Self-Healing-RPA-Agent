@@ -1,21 +1,39 @@
 
+from pathlib import Path
 from playwright.sync_api import sync_playwright
+
+# Create the screenshots folder if it doesn't exist
+SCREENSHOT_DIR = Path("screenshots")
+SCREENSHOT_DIR.mkdir(exist_ok=True)
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
+
     page = browser.new_page(
         viewport={"width": 390, "height": 844}
     )
 
     page.set_content("""
-        <title>OmniSight UI Bug Test</title>
-        <div style="width: 600px; height: 100px; background: tomato;">
-            This box is too wide for a mobile screen!
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>OmniSight UI Bug Test</title>
+        </head>
+        <body>
+            <div style="
+                width: 600px;
+                height: 100px;
+                background: tomato;
+            ">
+                This box is too wide for a mobile screen!
+            </div>
+        </body>
+        </html>
     """)
 
-    # Save a screenshot of the UI
-    page.screenshot(path="ui_bug.png", full_page=True)
+    # Capture the page screenshot
+    screenshot_path = SCREENSHOT_DIR / "ui_bug.png"
+    page.screenshot(path=str(screenshot_path), full_page=True)
 
     # Collect page information
     page_title = page.title()
@@ -27,7 +45,9 @@ with sync_playwright() as p:
     print("Page title:", page_title)
     print("Viewport width:", viewport_width)
     print("Page content width:", page_width)
+    print("Screenshot saved to:", screenshot_path)
 
+    # Detect horizontal overflow
     if page_width > viewport_width:
         print("Possible UI issue: horizontal overflow detected!")
     else:
