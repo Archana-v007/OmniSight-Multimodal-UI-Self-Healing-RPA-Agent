@@ -44,7 +44,14 @@ def main():
                 """)
 
                 report = inspect_page(page)
+                screenshot_dir = Path("screenshots")
+                screenshot_dir.mkdir(exist_ok=True)
 
+                screenshot_path = screenshot_dir / f"{device_name}_screenshot.png"
+                page.screenshot(path=str(screenshot_path), full_page=True)
+
+                print(f"Screenshot saved to: {screenshot_path}")
+                
                 report["device"] = device_name
                 report["viewport_height"] = viewport["height"]
 
