@@ -8,7 +8,7 @@ def check_page_title(page):
         return {
             "type": "missing_page_title",
             "severity": "medium",
-            "message": "The webpage has no title."
+            "message": "The webpage has no title.",
         }
 
     return None
@@ -28,7 +28,7 @@ def check_horizontal_overflow(page):
             "severity": "high",
             "message": "Page content exceeds the viewport width.",
             "viewport_width": viewport_width,
-            "page_width": page_width
+            "page_width": page_width,
         }
 
     return None
@@ -43,22 +43,20 @@ def check_images_without_alt(page):
         return {
             "type": "image_missing_alt",
             "severity": "medium",
-            "message": (
-                "Some images are missing an alt attribute."
-            ),
-            "count": missing_alt_images
+            "message": "Some images are missing an alt attribute.",
+            "count": missing_alt_images,
         }
 
     return None
 
 
 def inspect_page(page):
-    """Run all UI checks and return a structured result."""
+    """Run UI checks and return findings with browser evidence."""
 
     checks = [
         check_page_title,
         check_horizontal_overflow,
-        check_images_without_alt
+        check_images_without_alt,
     ]
 
     findings = []
@@ -69,9 +67,33 @@ def inspect_page(page):
         if finding is not None:
             findings.append(finding)
 
+    # Collect independent measurements from the browser.
+    viewport_width = page.evaluate("window.innerWidth")
+    document_width = page.evaluate(
+        "document.documentElement.scrollWidth"
+    )
+    body_width = page.locator("body").evaluate(
+        "(element) => element.scrollWidth"
+    )
+
+    horizontal_overflow_detected = (
+        document_width > viewport_width
+        or body_width > viewport_width
+    )
+
+    browser_evidence = {
+        "horizontal_overflow": {
+            "viewport_width": viewport_width,
+            "document_width": document_width,
+            "body_width": body_width,
+            "detected": horizontal_overflow_detected,
+        }
+    }
+
     return {
         "page_title": page.title(),
-        "viewport_width": page.evaluate("window.innerWidth"),
+        "viewport_width": viewport_width,
         "issues_found": len(findings),
-        "issues": findings
+        "issues": findings,
+        "browser_evidence": browser_evidence,
     }
