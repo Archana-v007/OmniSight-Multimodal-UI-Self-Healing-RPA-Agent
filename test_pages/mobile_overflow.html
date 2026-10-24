@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniSight Mobile Overflow Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 600px;
+            padding: 20px;
+            background-color: tomato;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>OmniSight Test Page</h1>
+    <p>This page contains an intentional mobile layout bug.</p>
+
+    <div class="container">
+        <h2>Intentionally Broken Section</h2>
+        <p>This section is 600 pixels wide and will overflow a mobile screen.</p>
+    </div>
+</body>
+</html>

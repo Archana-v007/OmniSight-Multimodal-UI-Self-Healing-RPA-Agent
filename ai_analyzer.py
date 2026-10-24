@@ -117,18 +117,55 @@ Rules:
     }
 
 
+
 def main():
-    image_path = (
-        Path(sys.argv[1])
-        if len(sys.argv) > 1
-        else Path("screenshots/mobile_screenshot.png")
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Analyze a webpage screenshot using local AI."
+    )
+    parser.add_argument(
+        "image_path",
+        nargs="?",
+        default="screenshots/mobile_screenshot.png",
+        help="Path to the screenshot.",
+    )
+    parser.add_argument(
+        "--viewport-width",
+        type=int,
+        default=None,
+        help="Browser viewport width in pixels.",
+    )
+    args = parser.parse_args()
+
+    image_path = Path(args.image_path)
+
+    if args.viewport_width is not None:
+        viewport_width = args.viewport_width
+    elif "desktop" in image_path.stem.lower():
+        viewport_width = 1366
+    else:
+        viewport_width = 390
+
+    device = (
+        "desktop"
+        if viewport_width >= 768
+        else "mobile"
     )
 
-    report_path = Path("reports/ai_mobile_analysis.json")
+    report_path = Path(
+        f"reports/ai_{device}_analysis.json"
+    )
 
     try:
-        report = analyze_screenshot(image_path)
-        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report = analyze_screenshot(
+            image_path,
+            viewport_width=viewport_width,
+        )
+        report_path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
         report_path.write_text(
             json.dumps(report, indent=2),
             encoding="utf-8",
