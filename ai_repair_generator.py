@@ -9,7 +9,7 @@ OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "qwen2.5vl:3b"
 
 
-def generate_ai_css_fix(issue, target):
+def generate_ai_css_fix(issue, target, feedback=None):
     """
     Ask local Ollama to suggest a CSS fix for a detected UI issue.
     This function does not modify any source files.
@@ -65,6 +65,24 @@ Return ONLY a JSON object in this format:
   "css_fix": "@media (max-width: 767px) {{ ... }}",
   "explanation": "Brief explanation"
 }}
+"""
+
+    if feedback:
+        prompt += f"""
+
+PREVIOUS REPAIR FAILED VALIDATION.
+
+Browser validation feedback:
+{json.dumps(feedback, indent=2)}
+
+Generate a corrected CSS repair.
+
+Requirements:
+- Address every failed viewport.
+- Correct the underlying layout problem.
+- Do not repeat the previously failed CSS.
+- Preserve desktop layout.
+- Return only the requested JSON object.
 """
 
     try:
@@ -140,4 +158,3 @@ if __name__ == "__main__":
     )
 
     print(json.dumps(result, indent=2))
-
